@@ -19,6 +19,7 @@ class hexa{
         friend bool operator> (const hexa& hex1, const hexa& hex2);
         friend hexa operator+ (const hexa& hex1, const hexa& hex2);
         friend hexa operator- (const hexa& hex1, const hexa& hex2);
+        friend hexa operator* (const hexa& hex1, const hexa& hex2);
         friend ostream& operator<< (ostream& out, const hexa& hex);
         hexa& operator= (const hexa& hex);
         friend bool operator== (const hexa& hex1, const hexa& hex2);

@@ -239,8 +239,48 @@ hexa operator- (const hexa& hex1, const hexa& hex2)
         cout << "carry:tmp_diff::" << carry << ":" << tmp_diff << endl;
     }
     hexDiff.format();
-    return hexDiff;
-    
+    return hexDiff; 
+}
+
+hexa operator* (const hexa& hex1, const hexa& hex2)
+{
+    hexa hexMul(0);
+    int tmp_mul = 0, carry = 0, tmp_h1 = 0, tmp_h2 = 0;
+    int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
+    int max_length = h1_length + h2_length + 1;
+    hexMul.m_hexNumb.resize(max_length + 1);
+    //tmp_hexMul.m_hexNumb.resize(max_length + 1);
+    cout << "maxlength:" << max_length << endl;
+    for (int i = 0; i <= h2_length; ++i)
+    {
+        hexa tmp_hexMul(0);
+        tmp_hexMul.m_hexNumb.resize(max_length + 1);
+        for (int k = 0; k < i; k++)
+            tmp_hexMul.m_hexNumb[max_length-k]= '0';
+
+        tmp_h2 = hexa::htoi(hex2.m_hexNumb[h2_length - i]);
+        for (int y = 0; y <= h1_length; ++y)
+        {
+            tmp_h1 = hexa::htoi(hex1.m_hexNumb[h1_length - y]);
+            tmp_mul = tmp_h1 * tmp_h2 + carry;
+            cout << tmp_h1 << ":tmp_h1:tmp_h2:" << tmp_h2 << endl;
+            carry = (tmp_mul/16)*16;
+            if (tmp_mul > 15)
+                tmp_mul -= carry;
+            cout << tmp_mul << ":tmp_mul:carry:" << carry << endl;
+            carry /= 16;
+            //cout << tmp_hexMul.m_hexNumb[max_length - y - i+1] << ":tmp_hexMul:pos:" << max_length-y-i << endl;
+            tmp_hexMul.m_hexNumb[max_length - y - i] = hexa::itoh(tmp_mul)[0];
+        }
+        tmp_hexMul.format();
+        if(carry != 0)
+            tmp_hexMul.m_hexNumb = hexa::itoh(carry) + tmp_hexMul.m_hexNumb;
+        cout << "\ttmp_hexMul:" << tmp_hexMul << endl;
+        hexMul += tmp_hexMul;
+        carry = 0;
+    }
+    return hexMul;
+
 }
 
 ostream& operator<< (ostream& out, const hexa& hex)

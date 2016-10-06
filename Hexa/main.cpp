@@ -13,15 +13,14 @@ int main(int argc, char * argv[])
     int arg1, arg2;
     ss >> arg1;
     ss1 >> arg2;
-    cout << "arg2:" << argv[2] << endl;
+    //cout << "arg2:" << argv[2] << endl;
     hexa hex1(arg1), hex2(arg2);
     hex1.print();
     hex2.print();
-    hexa hex3 = hex1+hex2;
+    hexa hex3 = hex1*hex2;
     hex3.print();
-    /*hexa hex4(2);
-    hex4.print();
-    hex4 += hex3;
-    cout << hex4 << endl;*/
+    hexa hex4(390816),hex5(24426);
+    hex4+=hex5;
+    cout << hex4 << ":" << hex3 << endl;
     return 0;
 }
