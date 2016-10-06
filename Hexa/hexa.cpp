@@ -14,7 +14,7 @@ hexa::hexa(int numb)
 
 hexa::hexa(hexa const& hexa):m_hexNumb(hexa.m_hexNumb), m_sign(hexa.m_sign)
 {
-    cout << "cpy_hex:" << m_sign << m_hexNumb << endl;;
+    //cout << "cpy_hex:" << m_sign << m_hexNumb << endl;;
 }
 
 hexa::~hexa()
@@ -31,7 +31,7 @@ int hexa::pow16(int i)
 
 const void hexa::print()
 {   
-    cout << "hex:" << m_sign << m_hexNumb << endl;;
+    cout << m_sign << "0x" << m_hexNumb << endl;;
 }
 
 const string hexa::value()
@@ -128,6 +128,11 @@ bool operator< (const hexa& hex1, const hexa& hex2)
                 return true;
         }
     }
+}
+        
+bool operator> (const hexa& hex1, const hexa& hex2)
+{
+    return (hex2 < hex1);
 }
 
 hexa operator+ (const hexa& hex1, const hexa& hex2)
@@ -272,5 +277,11 @@ bool operator!= (const hexa& hex1, const hexa& hex2)
 hexa& hexa::operator+= (const hexa& hex)
 {
     *this = hex + *this;
+    return *this;
+}
+        
+hexa& hexa::operator-= (const hexa& hex)
+{
+    *this = hex - *this;
     return *this;
 }

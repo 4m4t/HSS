@@ -16,6 +16,7 @@ class hexa{
         static int pow16(int i);
         template <typename T1> hexa hexRoot(T1 numb);
         friend bool operator< (const hexa& hex1, const hexa& hex2);
+        friend bool operator> (const hexa& hex1, const hexa& hex2);
         friend hexa operator+ (const hexa& hex1, const hexa& hex2);
         friend hexa operator- (const hexa& hex1, const hexa& hex2);
         friend ostream& operator<< (ostream& out, const hexa& hex);
@@ -23,6 +24,7 @@ class hexa{
         friend bool operator== (const hexa& hex1, const hexa& hex2);
         friend bool operator!= (const hexa& hex1, const hexa& hex2);
         hexa& operator+= (const hexa& hex);
+        hexa& operator-= (const hexa& hex);
         
     private:
         string m_hexNumb;
