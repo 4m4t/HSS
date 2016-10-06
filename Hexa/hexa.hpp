@@ -26,7 +26,7 @@ class hexa{
         
     private:
         string m_hexNumb;
-        char sign;
+        char m_sign;
         
         void format();
         string push_front(string source, string t);

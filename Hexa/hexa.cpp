@@ -2,16 +2,19 @@
 
 hexa::hexa(int numb)
 {
-    sign = '\0';
+    m_sign = '\0';
     if(numb < 0)
-        sign = '-';
+    {
+        numb *= -1;
+        m_sign = '-';
+    }
     
     m_hexNumb = itoh(numb);
 }
 
-hexa::hexa(hexa const& hexa):m_hexNumb(hexa.m_hexNumb)
+hexa::hexa(hexa const& hexa):m_hexNumb(hexa.m_hexNumb), m_sign(hexa.m_sign)
 {
-    cout << "cpy_hex:" <<  m_hexNumb << endl;;
+    cout << "cpy_hex:" << m_sign << m_hexNumb << endl;;
 }
 
 hexa::~hexa()
@@ -28,12 +31,12 @@ int hexa::pow16(int i)
 
 const void hexa::print()
 {   
-    cout << "hex:" << sign << m_hexNumb << endl;;
+    cout << "hex:" << m_sign << m_hexNumb << endl;;
 }
 
 const string hexa::value()
 {
-    return sign+m_hexNumb;
+    return m_sign+m_hexNumb;
 }
 
 int hexa::htoi(char hex)
@@ -106,9 +109,9 @@ bool operator< (const hexa& hex1, const hexa& hex2)
     if(hex1 == hex2)
         return false;
 
-    if(hex1.sign  == '-' && hex2.sign == '\0')
+    if(hex1.m_sign  == '-' && hex2.m_sign == '\0')
         return true;
-    if(hex1.sign == '\0' && hex2.sign == '-')
+    if(hex1.m_sign == '\0' && hex2.m_sign == '-')
         return false;
 
     if (h1_length > h2_length)
@@ -129,7 +132,17 @@ bool operator< (const hexa& hex1, const hexa& hex2)
 
 hexa operator+ (const hexa& hex1, const hexa& hex2)
 {
-    hexa hexSum(0);
+    hexa hexSum(0), h1(hex1), h2(hex2);
+    h1.m_sign = '\0';
+    h2.m_sign = '\0';
+    
+    if(hex1.m_sign == '-' && hex2.m_sign == '-')
+        hexSum.m_sign = '-';
+    if(hex1.m_sign == '-' && hex2.m_sign == '\0')
+        return h2 - h1;
+    if(hex1.m_sign == '\0' && hex2.m_sign == '-')
+        return h1 - h2;
+
     int carry = 0, tmp_sum = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
     int max_length = max(h1_length, h2_length);
@@ -164,13 +177,31 @@ hexa operator+ (const hexa& hex1, const hexa& hex2)
 
 hexa operator- (const hexa& hex1, const hexa& hex2)
 {
-    hexa hexDiff(0);
-    if (hex1 < hex2)
+    hexa hexDiff(0), h1(hex1), h2(hex2);
+    h1.m_sign = '\0';
+    h2.m_sign = '\0';
+    if (h1 < h2 && hex1.m_sign == hex2.m_sign) //abs
     {
-        hexDiff = hex2 - hex1;
-        hexDiff.sign = '-';
+        hexDiff = h2 - h1;
+        if (hex1.m_sign == '-')
+            hexDiff.m_sign = '\0';
+        else
+            hexDiff.m_sign = '-';
         return hexDiff;
     }
+
+    if (hex1.m_sign != hex2.m_sign)
+    {
+        hexDiff = h1 + h2;
+        hexDiff.m_sign = hex1.m_sign;
+        return hexDiff;
+    }
+    else
+    {
+        hexDiff.m_sign = hex1.m_sign;
+    }
+
+
     int carry = 0, tmp_diff = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
     int max_length = max(h1_length, h2_length);
@@ -199,7 +230,7 @@ hexa operator- (const hexa& hex1, const hexa& hex2)
     }
     if(carry != 0)
     {
-        hexDiff.sign = '-';
+        hexDiff.m_sign = '-';
         cout << "carry:tmp_diff::" << carry << ":" << tmp_diff << endl;
     }
     hexDiff.format();
