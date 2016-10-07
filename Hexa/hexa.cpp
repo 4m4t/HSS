@@ -245,39 +245,41 @@ hexa operator- (const hexa& hex1, const hexa& hex2)
 hexa operator* (const hexa& hex1, const hexa& hex2)
 {
     hexa hexMul(0);
-    int tmp_mul = 0, carry = 0, tmp_h1 = 0, tmp_h2 = 0;
+    int tmp_mul = 0, tmp_sum = 0, carry_mul = 0, carry_sum = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
-    int max_length = h1_length + h2_length + 1;
-    hexMul.m_hexNumb.resize(max_length + 1);
-    //tmp_hexMul.m_hexNumb.resize(max_length + 1);
-    cout << "maxlength:" << max_length << endl;
+    int max_length = max(h1_length, h2_length) + 1;
+    hexMul.m_hexNumb.resize(max_length, '0');
     for (int i = 0; i <= h2_length; ++i)
     {
-        hexa tmp_hexMul(0);
-        tmp_hexMul.m_hexNumb.resize(max_length + 1);
-        for (int k = 0; k < i; k++)
-            tmp_hexMul.m_hexNumb[max_length-k]= '0';
-
         tmp_h2 = hexa::htoi(hex2.m_hexNumb[h2_length - i]);
+        //cout << "i:" << i << endl;
         for (int y = 0; y <= h1_length; ++y)
         {
             tmp_h1 = hexa::htoi(hex1.m_hexNumb[h1_length - y]);
-            tmp_mul = tmp_h1 * tmp_h2 + carry;
-            cout << tmp_h1 << ":tmp_h1:tmp_h2:" << tmp_h2 << endl;
-            carry = (tmp_mul/16)*16;
-            if (tmp_mul > 15)
-                tmp_mul -= carry;
-            cout << tmp_mul << ":tmp_mul:carry:" << carry << endl;
-            carry /= 16;
-            //cout << tmp_hexMul.m_hexNumb[max_length - y - i+1] << ":tmp_hexMul:pos:" << max_length-y-i << endl;
-            tmp_hexMul.m_hexNumb[max_length - y - i] = hexa::itoh(tmp_mul)[0];
+            tmp_mul = tmp_h1 * tmp_h2 + carry_mul;
+            carry_mul = tmp_mul/16;
+            tmp_mul -= (carry_mul * 16);
+            tmp_sum = tmp_mul + hexa::htoi(hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1]) + carry_sum;
+            //cout << "hexa:" << hexa::htoi(hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1]) << endl;
+            //cout << "\ttmp_sum:" << tmp_sum << ";tmp_mul:" << tmp_mul << endl;
+            if(tmp_sum > 15)
+            {
+                carry_sum = 1;
+                tmp_sum -= 16;
+            }
+            else
+                carry_sum = 0;
+            hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1] = hexa::itoh(tmp_sum)[0];
         }
-        tmp_hexMul.format();
-        if(carry != 0)
-            tmp_hexMul.m_hexNumb = hexa::itoh(carry) + tmp_hexMul.m_hexNumb;
-        cout << "\ttmp_hexMul:" << tmp_hexMul << endl;
-        hexMul += tmp_hexMul;
-        carry = 0;
+        if(carry_mul != 0)
+            hexMul.m_hexNumb = hexa::itoh(carry_mul) + hexMul.m_hexNumb;
+        //cout << "hexMul:" << hexMul << endl;
+        carry_mul = 0;
+    }
+    if (carry_sum != 0)
+    {
+        tmp_sum = hexa::htoi(hexMul.m_hexNumb[0]) + 1;
+        hexMul.m_hexNumb[0] = hexa::itoh(tmp_sum)[0];
     }
     return hexMul;
 

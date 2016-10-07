@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
     hex2.print();
     hexa hex3 = hex1*hex2;
     hex3.print();
-    hexa hex4(390816),hex5(24426);
+    hexa hex4(24426),hex5(390816);
     hex4+=hex5;
     cout << hex4 << ":" << hex3 << endl;
     return 0;
