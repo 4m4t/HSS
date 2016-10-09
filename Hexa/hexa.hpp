@@ -26,6 +26,7 @@ class hexa{
         friend bool operator!= (const hexa& hex1, const hexa& hex2);
         hexa& operator+= (const hexa& hex);
         hexa& operator-= (const hexa& hex);
+        hexa& operator*= (const hexa& hex);
         
     private:
         string m_hexNumb;

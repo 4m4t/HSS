@@ -248,19 +248,23 @@ hexa operator* (const hexa& hex1, const hexa& hex2)
     int tmp_mul = 0, tmp_sum = 0, carry_mul = 0, carry_sum = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
     int max_length = max(h1_length, h2_length) + 1;
-    hexMul.m_hexNumb.resize(max_length, '0');
+    hexMul.m_hexNumb.resize(h1_length+1, '0');
     for (int i = 0; i <= h2_length; ++i)
     {
         tmp_h2 = hexa::htoi(hex2.m_hexNumb[h2_length - i]);
         //cout << "i:" << i << endl;
         for (int y = 0; y <= h1_length; ++y)
         {
+            //cout << "i:" << i  << "y:" << y << endl;
+
             tmp_h1 = hexa::htoi(hex1.m_hexNumb[h1_length - y]);
             tmp_mul = tmp_h1 * tmp_h2 + carry_mul;
             carry_mul = tmp_mul/16;
             tmp_mul -= (carry_mul * 16);
+            if(hexMul.m_hexNumb.length() < y + i + 1)
+                hexMul.m_hexNumb.resize(hexMul.m_hexNumb.length() + 1, '0');
             tmp_sum = tmp_mul + hexa::htoi(hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1]) + carry_sum;
-            //cout << "hexa:" << hexa::htoi(hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1]) << endl;
+            //cout << "hexa:" << hexMul.m_hexNumb.length() - y - i - 1 << endl;
             //cout << "\ttmp_sum:" << tmp_sum << ";tmp_mul:" << tmp_mul << endl;
             if(tmp_sum > 15)
             {
@@ -325,5 +329,11 @@ hexa& hexa::operator+= (const hexa& hex)
 hexa& hexa::operator-= (const hexa& hex)
 {
     *this = hex - *this;
+    return *this;
+}
+        
+hexa& hexa::operator*= (const hexa& hex)
+{
+    *this = hex * *this;
     return *this;
 }
