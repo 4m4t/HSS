@@ -15,18 +15,31 @@ class hexa{
         const string value();
         static int pow16(int i);
         template <typename T1> hexa hexRoot(T1 numb);
+        hexa absolute(const hexa& hex);
         friend bool operator< (const hexa& hex1, const hexa& hex2);
+        friend bool operator<= (const hexa& hex1, const hexa& hex2);
         friend bool operator> (const hexa& hex1, const hexa& hex2);
+        friend bool operator> (const hexa& hex, const int num);
+        friend bool operator>= (const hexa& hex1, const hexa& hex2);
+        friend bool operator>= (const hexa& hex, const int num);
         friend hexa operator+ (const hexa& hex1, const hexa& hex2);
+        friend hexa operator+ (const hexa& hex, int nb);
         friend hexa operator- (const hexa& hex1, const hexa& hex2);
+        friend hexa operator- (const hexa& hex, int nb);
         friend hexa operator* (const hexa& hex1, const hexa& hex2);
+        friend hexa operator* (const hexa& hex, int nb);
+        friend hexa operator/ (const hexa& hex1, const hexa& hex2);
+        friend hexa operator/ (const hexa& hex, int nb);
         friend ostream& operator<< (ostream& out, const hexa& hex);
         hexa& operator= (const hexa& hex);
         friend bool operator== (const hexa& hex1, const hexa& hex2);
+        friend bool operator== (const hexa& hex, const int num);
         friend bool operator!= (const hexa& hex1, const hexa& hex2);
         hexa& operator+= (const hexa& hex);
+        hexa& operator+= (const int nb);
         hexa& operator-= (const hexa& hex);
         hexa& operator*= (const hexa& hex);
+        hexa& operator/= (const hexa& hex);
         
     private:
         string m_hexNumb;

@@ -102,9 +102,16 @@ template <typename T1> hexa hexa::hexRoot(T1 numb)
     return hexRoot;
 }
 
+hexa hexa::absolute(const hexa& hex)
+{
+    hexa hexAbs(hex);
+    hexAbs.m_sign = '\0';
+    return hexAbs;
+}
+
 bool operator< (const hexa& hex1, const hexa& hex2)
 {
-    int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
+    int h1_length = hex1.m_hexNumb.length(), h2_length = hex2.m_hexNumb.length();
 
     if(hex1 == hex2)
         return false;
@@ -113,7 +120,6 @@ bool operator< (const hexa& hex1, const hexa& hex2)
         return true;
     if(hex1.m_sign == '\0' && hex2.m_sign == '-')
         return false;
-
     if (h1_length > h2_length)
         return false;
     else if (h1_length < h2_length)
@@ -128,11 +134,34 @@ bool operator< (const hexa& hex1, const hexa& hex2)
                 return true;
         }
     }
+    return false;
+}
+
+bool operator<= (const hexa& hex1, const hexa& hex2)
+{
+    return ((hex1 < hex2) || (hex1 == hex2));
 }
         
 bool operator> (const hexa& hex1, const hexa& hex2)
 {
     return (hex2 < hex1);
+}
+
+bool operator> (const hexa& hex, const int num)
+{
+    hexa h(num);
+    return (h < hex);
+}
+
+bool operator>= (const hexa& hex1, const hexa& hex2)
+{
+    return ((hex2 < hex1) || (hex1 == hex2));
+}
+
+bool operator>= (const hexa& hex, const int num)
+{
+    hexa h(num);
+    return(hex >= h);
 }
 
 hexa operator+ (const hexa& hex1, const hexa& hex2)
@@ -173,11 +202,14 @@ hexa operator+ (const hexa& hex1, const hexa& hex2)
         hexSum.m_hexNumb[max_length-i] = hexa::itoh(tmp_sum)[0];
     }
     if(carry != 0)
-    {
-        //hexSum.m_hexNumb.resize(max_length+2);
         hexSum.m_hexNumb = "1" + hexSum.m_hexNumb;
-    }
     return hexSum;
+}
+
+hexa operator+ (const hexa& hex, int nb)
+{
+    hexa hex2(nb);
+    return (hex + hex2);
 }
 
 hexa operator- (const hexa& hex1, const hexa& hex2)
@@ -205,7 +237,6 @@ hexa operator- (const hexa& hex1, const hexa& hex2)
     {
         hexDiff.m_sign = hex1.m_sign;
     }
-
 
     int carry = 0, tmp_diff = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
@@ -236,27 +267,50 @@ hexa operator- (const hexa& hex1, const hexa& hex2)
     if(carry != 0)
     {
         hexDiff.m_sign = '-';
-        cout << "carry:tmp_diff::" << carry << ":" << tmp_diff << endl;
     }
     hexDiff.format();
     return hexDiff; 
 }
 
+hexa operator- (const hexa& hex, int nb)
+{
+    hexa hex2(nb);
+    return (hex - hex2);
+}
+
 hexa operator* (const hexa& hex1, const hexa& hex2)
 {
     hexa hexMul(0);
+    if(hex1.m_sign == hex2.m_sign)
+        hexMul.m_sign = '\0';
+    else
+        hexMul.m_sign = '-';
+    /********************************************/
+    int decimal_position = -1;
+    /********************************************/
     int tmp_mul = 0, tmp_sum = 0, carry_mul = 0, carry_sum = 0, tmp_h1 = 0, tmp_h2 = 0;
     int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
     int max_length = max(h1_length, h2_length) + 1;
     hexMul.m_hexNumb.resize(h1_length+1, '0');
     for (int i = 0; i <= h2_length; ++i)
     {
+        /********************************************/
+        if (hex2.m_hexNumb[h2_length - i] == '.')
+        {
+            decimal_position += h2_length - i + 1;
+            ++i;
+        }
+        /********************************************/
         tmp_h2 = hexa::htoi(hex2.m_hexNumb[h2_length - i]);
-        //cout << "i:" << i << endl;
         for (int y = 0; y <= h1_length; ++y)
         {
-            //cout << "i:" << i  << "y:" << y << endl;
-
+            /********************************************/
+            if (hex1.m_hexNumb[h1_length - y] == '.')
+            {
+                decimal_position += h1_length - i + 1;
+                ++y;
+            }
+            /********************************************/
             tmp_h1 = hexa::htoi(hex1.m_hexNumb[h1_length - y]);
             tmp_mul = tmp_h1 * tmp_h2 + carry_mul;
             carry_mul = tmp_mul/16;
@@ -264,8 +318,6 @@ hexa operator* (const hexa& hex1, const hexa& hex2)
             if(hexMul.m_hexNumb.length() < y + i + 1)
                 hexMul.m_hexNumb.resize(hexMul.m_hexNumb.length() + 1, '0');
             tmp_sum = tmp_mul + hexa::htoi(hexMul.m_hexNumb[hexMul.m_hexNumb.length() - y - i - 1]) + carry_sum;
-            //cout << "hexa:" << hexMul.m_hexNumb.length() - y - i - 1 << endl;
-            //cout << "\ttmp_sum:" << tmp_sum << ";tmp_mul:" << tmp_mul << endl;
             if(tmp_sum > 15)
             {
                 carry_sum = 1;
@@ -277,7 +329,6 @@ hexa operator* (const hexa& hex1, const hexa& hex2)
         }
         if(carry_mul != 0)
             hexMul.m_hexNumb = hexa::itoh(carry_mul) + hexMul.m_hexNumb;
-        //cout << "hexMul:" << hexMul << endl;
         carry_mul = 0;
     }
     if (carry_sum != 0)
@@ -285,25 +336,66 @@ hexa operator* (const hexa& hex1, const hexa& hex2)
         tmp_sum = hexa::htoi(hexMul.m_hexNumb[0]) + 1;
         hexMul.m_hexNumb[0] = hexa::itoh(tmp_sum)[0];
     }
+    /********************************************/
+    if (decimal_position != -1)
+        hexMul.m_hexNumb.insert(decimal_position, ".");
+    /********************************************/
     return hexMul;
 
 }
 
+hexa operator* (const hexa& hex, int nb)
+{
+    hexa hex2(nb);
+    return (hex * hex2);
+}
+
+hexa operator/ (const hexa& hex1, const hexa& hex2)
+{
+    hexa hexDiv(0), h1(hex1), h2(hex2);
+    h1.m_sign = '\0';
+    h2.m_sign = '\0';
+    if (h2 == 0)
+    {
+        hexDiv.m_hexNumb = "INF";
+        return (hexDiv);
+    }
+    else if (h1 < h2)
+        return (hexDiv);
+    while (h1 >= h2)
+    {
+        hexDiv += 1;
+        h1 -= h2;
+    }
+    if (hex1.m_sign == hex2.m_sign)
+        hexDiv.m_sign = '\0';
+    else
+        hexDiv.m_sign = '-';
+    return hexDiv;
+}
+
+hexa operator/ (const hexa& hex, int nb)
+{
+    hexa hex2(nb);
+    return (hex / hex2);
+}
+
 ostream& operator<< (ostream& out, const hexa& hex)
 {
-    out << hex.m_hexNumb;
+    out << hex.m_sign << hex.m_hexNumb;
     return out;
 }
 
 hexa& hexa::operator= (const hexa& hex)
 {
+    m_sign = hex.m_sign;
     m_hexNumb = hex.m_hexNumb;
     return *this;
 }
 
 bool operator== (const hexa& hex1, const hexa& hex2)
 {
-    int h1_length = hex1.m_hexNumb.length()-1, h2_length = hex2.m_hexNumb.length()-1;
+    int h1_length = hex1.m_hexNumb.length(), h2_length = hex2.m_hexNumb.length();
     if (h1_length != h2_length)
         return false;
     else
@@ -315,6 +407,12 @@ bool operator== (const hexa& hex1, const hexa& hex2)
     return true;
 }
 
+bool operator== (const hexa& hex, const int num)
+{
+    hexa h(num);
+    return (hex == h);
+}
+
 bool operator!= (const hexa& hex1, const hexa& hex2)
 {
     return !(hex1 == hex2);
@@ -322,18 +420,32 @@ bool operator!= (const hexa& hex1, const hexa& hex2)
 
 hexa& hexa::operator+= (const hexa& hex)
 {
-    *this = hex + *this;
+    *this = *this + hex;
+    return *this;
+}
+
+hexa& hexa::operator+= (const int nb)
+{
+    *this = *this + nb;
     return *this;
 }
         
 hexa& hexa::operator-= (const hexa& hex)
 {
-    *this = hex - *this;
+    *this = *this - hex;
     return *this;
 }
         
 hexa& hexa::operator*= (const hexa& hex)
 {
-    *this = hex * *this;
+    *this = *this * hex;
     return *this;
 }
+
+hexa& hexa::operator/= (const hexa& hex)
+{
+    *this = *this / hex;
+    cout << "this_sign:" << this->m_sign << endl;
+    return *this;
+}
+
