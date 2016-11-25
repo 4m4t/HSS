@@ -1,0 +1,1 @@
+Class for hex numbers up to string_max_size. No decimal. Constructor for int, hexa.
