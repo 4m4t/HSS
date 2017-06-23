@@ -1,7 +1,7 @@
-#include "sha3.hpp"
+#include "sha3.h"
 
 int main()
 {
-    sha3 h();
-    h.round_constant(1);
+    sha3 h;
+    h.RoundConstant(1);
 }

@@ -1,25 +1,25 @@
-CC=g++
-CPPFLAGS=-g
-LDFLAGS=
-SRC=main.cpp \
-	sha3.cpp \
-	main.cpp
-INC=sha3.hpp
-OBJ=$(SRC:.c=.o)
-EXEC=sha3
+CC			=	g++
+CPPFLAGS	=	-Wall -W
+LDFLAGS		=
+SRC			=	sha3.cpp \
+				main.cpp
+INC			=	sha3.h
+OBJ			=	$(SRC:.cpp=.o)
+EXEC		=	sha3
 
-all: $(EXEC)
+all:	$(EXEC)
 
-$(EXEC): $(OBJ)
-	$(CC) -o $(EXEC) $^ $(LDFLAGS) -I.
+$(EXEC):	$(OBJ)
+	$(CC) -o $(EXEC) $(OBJ) $(LDFLAGS) -I.
 
-%.o: %.cpp
-	$(CC) -c $(OBJ) $(CPPFLAGS)
-
-.PHONY: clean cleanall
+%.o:	%.cpp
+	$(CC) $(CPPFLAGS) $(INC) -c $(SRC)
 
 clean:
 	rm *.o
 
 cleanall:
 	rm *.o $(EXEC)
+
+.PHONY:	clean	cleanall
+
